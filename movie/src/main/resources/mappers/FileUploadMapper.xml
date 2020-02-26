@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.movie.mapper.FileUploadMapper">
+  <select id="fileDetail" resultType="com.movie.model.FileUploadVO">
+  <!-- id가 메소드 역할, resultType이 리턴타입 -->
+    select * from tbl_fileupload
+	where boardName=#{boardName} and bno=#{bno}
+  </select>
+  
+  <insert id="fileInsert">
+  	<![CDATA[
+  	insert into tbl_fileupload(fileName, originalName, savedPath, thumbnailName, wr_date, bno, boardName) 
+  	values(#{fileName}, #{originalName}, #{savedPath}, #{thumbnailName}, sysdate(), LAST_INSERT_ID(), #{boardName});
+  	]]>
+  </insert>
+  
+  <update id="fileModify">
+  	update tbl_fileupload 
+  	set fileName=#{fileName}, 
+  	originalName=#{originalName},
+  	savedPath=#{savedPath}, 
+  	thumbnailName=#{thumbnailName}, 
+  	mod_date= sysdate()
+  	where fno=#{fno}
+  </update>
+  
+  <delete id="fileDelete">
+  	delete from tbl_fileupload where fno=#{fno}
+  </delete> 
+  
+  
+</mapper>

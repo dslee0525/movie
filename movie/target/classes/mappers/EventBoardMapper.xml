@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.movie.mapper.EventBoardMapper">
+  <select id="eventList" resultType="com.movie.model.EventBoardVO">
+  <!-- id가 메소드 역할, resultType이 리턴타입 -->
+    <![CDATA[
+    select * from tbl_event where end_date >= sysdate()
+    ]]>
+  </select>
+  
+  <select id="eventListPaging" resultType="com.movie.model.EventBoardVO">
+  <!-- id가 메소드 역할, resultType이 리턴타입 -->
+    <![CDATA[
+    select
+	no, subject, open_date, end_date, fileName, cnt
+	from(
+		select 
+		@rownum:=@rownum+1 as rownum, no, subject, open_date, end_date, fileName, cnt
+		from (select @rownum:=0) as rownum, tbl_event
+		where end_date >= sysdate()
+		order by no desc
+		) board
+	
+	where rownum > (#{pageNum}-1)*#{amount} and rownum <=#{pageNum}*#{amount}
+	
+    ]]>
+  </select>
+  
+  <select id="eventPast" resultType="com.movie.model.EventBoardVO">
+  	<!-- id가 메소드 역할, resultType이 리턴타입 -->
+    <![CDATA[
+    select * from tbl_event where end_date < sysdate()
+    ]]>
+  </select>
+  
+  <select id="eventPastPaging" resultType="com.movie.model.EventBoardVO">
+  <!-- id가 메소드 역할, resultType이 리턴타입 -->
+    <![CDATA[
+    select
+	no, subject, open_date, end_date, fileName, cnt
+	from(
+		select 
+		@rownum:=@rownum+1 as rownum, no, subject, open_date, end_date, fileName, cnt 
+		from (select @rownum:=0) as rownum, tbl_event
+		
+		where end_date < sysdate()
+		order by no desc
+		) tbl_event
+	
+	where rownum > (#{pageNum}-1)*#{amount} and rownum <=#{pageNum}*#{amount}
+	
+    ]]>
+  </select>
+  
+  <select id="eventDetail" resultType="com.movie.model.EventBoardVO">
+  	<!-- id가 메소드 역할, resultType이 리턴타입 -->
+    <![CDATA[
+    select * from tbl_event where no=#{no}
+    ]]>
+  </select>
+  
+  <select id="eventCount" resultType="int">
+  	<!-- id가 메소드 역할, resultType이 리턴타입 -->
+    <![CDATA[
+    select count(*) from tbl_event
+    where end_date >= sysdate()
+    ]]>
+    
+  </select>
+  
+  <select id="eventPastCount" resultType="int">
+  	<!-- id가 메소드 역할, resultType이 리턴타입 -->
+  	<![CDATA[
+    select count(*) from tbl_event
+    where end_date < sysdate()
+    ]]>
+  </select>
+  
+  <insert id="eventWrite">
+  	<![CDATA[
+  	insert into tbl_event(subject, content, writer, wr_date, open_date, end_date, cnt, fileName) 
+  	values(#{subject}, #{content}, #{writer}, sysdate(), #{open_date}, #{end_date}, #{cnt}, #{fileName})
+  	]]>
+  </insert>
+  
+  <update id="eventModify">
+  	update tbl_event 
+  	set subject=#{subject}, 
+  	content=#{content},
+  	open_date=#{open_date},
+  	end_date=#{end_date}
+  	<if test="fileName!=null">
+  	,fileName=#{fileName}
+  	</if>
+  	where no=#{no}
+  </update>
+  
+  <delete id="eventDelete">
+  	delete from tbl_event where no=#{no}
+  </delete> 
+  
+  <update id="viewingCount">
+  	update tbl_event set cnt = cnt +1  where no=#{no}
+  </update> 
+  
+  <select id="upToDate" resultType="com.movie.model.EventBoardVO">
+  	<!-- id가 메소드 역할, resultType이 리턴타입 -->
+    <![CDATA[
+    select * from tbl_event where end_date >= sysdate() limit 4;
+    ]]>
+  </select>
+  
+</mapper>

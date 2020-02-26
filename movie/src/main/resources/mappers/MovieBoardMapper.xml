@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.movie.mapper.MovieBoardMapper">
+  <select id="movieList" resultType="com.movie.model.MovieBoardVO">
+  <!-- id가 메소드 역할, resultType이 리턴타입 -->
+    select * from tbl_movies 
+    <if test="state!=null">
+    where state = #{state}
+    </if>
+    order by no desc;
+  </select>
+  
+  <select id="movieListPaging" resultType="com.movie.model.MovieBoardVO">
+  <!-- id가 메소드 역할, resultType이 리턴타입 -->
+    
+    select
+	no, subject, writer, wr_date, cnt
+	from(
+		select 
+		@rownum:=@rownum+1 as rownum, no, category, subject, writer, wr_date, cnt 
+		from (select @rownum:=0) as rownum, tbl_movies
+		<if test="keyword!=null">
+		where subject like concat('%',#{keyword},'%')
+		</if>
+		order by no desc
+		) board
+	<![CDATA[
+	where rownum > (#{pageNum}-1)*#{amount} and rownum <=#{pageNum}*#{amount}
+	
+    ]]>
+  </select>
+  
+  <select id="movieDetail" resultType="com.movie.model.MovieBoardVO">
+  	<!-- id가 메소드 역할, resultType이 리턴타입 -->
+    <![CDATA[
+    select * from tbl_movies where no=#{no}
+    ]]>
+  </select>
+  
+  <select id="movieCount" resultType="int">
+  	<!-- id가 메소드 역할, resultType이 리턴타입 -->
+    select count(*) from tbl_movies
+    <if test="keyword!=null">
+		where title like concat('%',#{keyword},'%')
+	</if>
+    
+  </select>
+  
+  <insert id="movieWrite">
+  	<![CDATA[
+  	insert into tbl_movies(title, titleEn, content, watching_age, director, castmates, genre, etc_info, open_date, state, cnt, wr_date, fileName) 
+  	values(#{title}, #{titleEn}, #{content}, #{watching_age}, #{director}, #{castmates}, #{genre}, #{etc_info}, #{open_date}, #{state}, #{cnt}, sysdate(), #{fileName});
+  	]]>
+  </insert>
+  
+  <update id="movieModify">
+  	update tbl_movies 
+  	set title=#{title}, 
+  	titleEn=#{titleEn}, 
+  	content=#{content},
+  	watching_age=#{watching_age}, 
+  	director=#{director},
+  	castmates=#{castmates}, 
+  	genre=#{genre},
+  	etc_info=#{etc_info}, 
+  	open_date=#{open_date},
+  	state=#{state}
+  	<if test="fileName!=null">
+  	,fileName=#{fileName}
+  	</if>
+  	where no=#{no}
+  </update>
+  
+  <delete id="movieDelete">
+  	delete from tbl_movies where no=#{no}
+  </delete> 
+  
+  <update id="viewingCount">
+  	update tbl_movies set cnt = cnt +1  where no=#{no}
+  </update>
+  
+  <select id="upToDate" resultType="com.movie.model.MovieBoardVO">
+  	<!-- id가 메소드 역할, resultType이 리턴타입 -->
+    <![CDATA[
+    select * from tbl_movies order by cnt desc limit 5;
+    ]]>
+  </select>
+  
+</mapper>

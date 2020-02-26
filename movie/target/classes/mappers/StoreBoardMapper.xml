@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.movie.mapper.StoreBoardMapper">
+  <select id="storeList" resultType="com.movie.model.StoreBoardVO">
+  <!-- id가 메소드 역할, resultType이 리턴타입 -->
+    select * from tbl_store 
+    <if test="category!=null">
+    where category = #{category}
+    </if>
+    order by no desc;
+  </select>
+  
+  <select id="storeListPaging" resultType="com.movie.model.StoreBoardVO">
+  <!-- id가 메소드 역할, resultType이 리턴타입 -->
+    
+    select
+	no, subject, writer, wr_date, cnt
+	from(
+		select 
+		@rownum:=@rownum+1 as rownum, no, category, subject, writer, wr_date, cnt 
+		from (select @rownum:=0) as rownum, tbl_store
+		<if test="keyword!=null">
+		where subject like concat('%',#{keyword},'%')
+		</if>
+		order by no desc
+		) board
+	<![CDATA[
+	where rownum > (#{pageNum}-1)*#{amount} and rownum <=#{pageNum}*#{amount}
+	
+    ]]>
+  </select>
+  
+  <select id="storeDetail" resultType="com.movie.model.StoreBoardVO">
+  	<!-- id가 메소드 역할, resultType이 리턴타입 -->
+    <![CDATA[
+    select * from tbl_store where no=#{no}
+    ]]>
+  </select>
+  
+  <select id="storeCount" resultType="int">
+  	<!-- id가 메소드 역할, resultType이 리턴타입 -->
+    select count(*) from tbl_store
+    <if test="keyword!=null">
+		where subject like concat('%',#{keyword},'%')
+	</if>
+    
+  </select>
+  
+  <insert id="storeWrite">
+  	<![CDATA[
+  	insert into tbl_store(subject, category, summary, content, component, expiry_date, price, sale_price, wr_date, fileName) 
+  	values(#{subject}, #{category}, #{summary}, #{content}, #{component}, #{expiry_date}, #{price}, #{sale_price}, sysdate(), #{fileName});
+  	]]>
+  </insert>
+  
+  <update id="storeModify">
+  	update tbl_store 
+  	set subject=#{subject}, 
+  	content=#{content},
+  	category=#{category},
+  	summary=#{summary},
+  	component=#{component},
+  	expiry_date=#{expiry_date},
+  	price=#{price},
+  	sale_price=#{sale_price}
+  	<if test="fileName!=null">
+  	,fileName=#{fileName}
+  	</if>
+  	where no=#{no}
+  </update>
+  
+  <delete id="storeDelete">
+  	delete from tbl_store where no=#{no}
+  </delete> 
+  
+</mapper>

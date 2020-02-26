@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.movie.mapper.MemberMapper">
+  
+  <select id="memberLogin" resultType="com.movie.model.MemberVO">
+  	<!-- id가 메소드 역할, resultType이 리턴타입 -->
+    <![CDATA[
+    select * from tbl_member where id=#{id} and pw =#{pw}
+    ]]>
+  </select>
+ 
+  <insert id="memberJoin">
+  	<![CDATA[
+  	insert into tbl_member(id, pw, name, phone, email, authority) 
+  	values(#{id}, #{pw}, #{name},#{phone}, #{email},#{authority})
+  	]]>
+  </insert>
+  
+  <select id="idCheck" parameterType="String" resultType="Integer">
+  	<!-- id가 메소드 역할, resultType이 리턴타입 -->
+    <![CDATA[
+    select count(*) from tbl_member where id=#{id}
+    ]]>
+  </select>
+  
+</mapper>
