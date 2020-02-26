@@ -46,7 +46,7 @@
 					<div class="img bg3"></div>
 				</div>
 			</div>
-			<div class="shourtCut"><a href="../notice/view?no=${notice.no}"><i class="xi-volume-mute"></i> ${notice.subject}<span class="date">${notice.wr_date}</span></a></div>
+			<div class="shourtCut"><a href="../notice/view?no=${notice.no}"><i class="xi-volume-mute"></i> 공지사항  ${notice.subject}<span class="date">${notice.wr_date}</span></a></div>
 		</div>
 		<div id="msec2" class="section">
 			<div class="inner">
